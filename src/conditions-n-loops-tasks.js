@@ -318,7 +318,7 @@ function isContainNumber(num, digit) {
  *  [1, 2, 3, 4, 5] => -1   => no balance element
  */
 function getBalanceIndex(arr) {
-  for (let i = 0; i < arr.length; i += 1) {
+  for (let i = 1; i < arr.length; i += 1) {
     let leftSum = 0;
     let rightSum = 0;
     for (let j = 0; j < i; j += 1) {
@@ -500,24 +500,25 @@ function sortByAsc(arr) {
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
 function shuffleChar(str, iterations) {
-  let duplicate = str;
-  for (let iteration = 0; iteration < iterations; iteration += 1) {
-    let left = '';
-    let right = '';
-    const isEvenLength = duplicate.length % 2 === 0;
+  let result = str;
 
-    for (let i = 0; i < duplicate.length - 1; i += 2) {
-      left += duplicate[i];
-      right += duplicate[i + 1];
+  for (let i = 0; i < iterations; i += 1) {
+    let oddChars = '';
+    let newResult = '';
+
+    for (let j = 0; j < str.length; j += 1) {
+      if ((j + 1) % 2 === 0) {
+        oddChars += result[j];
+      } else {
+        newResult += result[j];
+      }
     }
 
-    if (!isEvenLength) {
-      left += duplicate[duplicate.length - 1];
-    }
-
-    duplicate = left + right;
+    newResult += oddChars;
+    result = newResult;
   }
-  return duplicate;
+
+  return result;
 }
 
 /**
@@ -537,8 +538,60 @@ function shuffleChar(str, iterations) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  function reverse(arr, startIndex) {
+    const result = [...arr];
+    let start = startIndex;
+    let end = arr.length - 1;
+    while (start < end) {
+      [result[start], result[end]] = [result[end], result[start]];
+      start += 1;
+      end -= 1;
+    }
+
+    return result;
+  }
+
+  function toIntArray(num) {
+    const digits = [];
+    let temp = num;
+    while (temp > 9) {
+      digits.push(temp % 10);
+      temp = Math.floor(temp / 10);
+    }
+    digits.push(temp);
+    return reverse(digits, 0);
+  }
+
+  function toInt(digits) {
+    let result = 0;
+    for (let i = 0; i < digits.length; i += 1) {
+      result = result * 10 + digits[i];
+    }
+    return result;
+  }
+
+  let digits = toIntArray(number);
+
+  let i = digits.length - 2;
+  while (i >= 0 && digits[i] >= digits[i + 1]) {
+    i -= 1;
+  }
+
+  if (i === -1) {
+    return number;
+  }
+
+  let j = digits.length - 1;
+  while (digits[j] <= digits[i]) {
+    j -= 1;
+  }
+
+  [digits[i], digits[j]] = [digits[j], digits[i]];
+
+  digits = reverse(digits, i + 1);
+
+  return toInt(digits);
 }
 
 module.exports = {
